@@ -8,29 +8,16 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-/**
- * Controller responsible for the JavaFX User Interface and event handling.
- * 
- * OOP Concepts Demonstrated:
- * - Composition & Object Creation: Instantiates and collaborates with
- *   FileProcessor, EncryptionEngine (polymorphic FileOperation), and KeyManager.
- * - Separation of Concerns: Handles UI state, user actions, and delegates
- *   file processing and encryption logic to dedicated classes.
- */
 public class MainController {
 
-    // Primary Stage reference for dialogs
     private final Stage stage;
 
-    // OOP Objects
     private final FileProcessor fileProcessor;
     private final FileOperation encryptionEngine;
     private final KeyManager keyManager;
 
-    // State
     private File selectedFile;
 
-    // UI Controls
     private Label fileIconLabel;
     private Label fileNameLabel;
     private Label filePathLabel;
@@ -43,24 +30,18 @@ public class MainController {
 
     public MainController(Stage stage) {
         this.stage = stage;
-        // Instantiating collaborator objects
         this.fileProcessor = new FileProcessor();
-        this.encryptionEngine = new EncryptionEngine(); // Polymorphism: FileOperation reference
+        this.encryptionEngine = new EncryptionEngine();
         this.keyManager = new KeyManager();
     }
 
-    /**
-     * Builds and returns the main view layout.
-     */
     public Parent createView() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("root-pane");
         root.setPadding(new Insets(24, 32, 24, 32));
 
-        // 1. Header
         root.setTop(createHeader());
 
-        // 2. Center Content Area
         VBox contentBox = new VBox(16);
         contentBox.setAlignment(Pos.CENTER);
         contentBox.setPadding(new Insets(16, 0, 16, 0));
@@ -73,10 +54,8 @@ public class MainController {
 
         root.setCenter(contentBox);
 
-        // 3. Footer (Status & Clear)
         root.setBottom(createFooter());
 
-        // Initial UI State
         updateUiState();
 
         return root;
@@ -178,8 +157,6 @@ public class MainController {
         return footer;
     }
 
-    // --- Action Handlers ---
-
     private void handleBrowse() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select File to Encrypt or Decrypt");
@@ -196,7 +173,6 @@ public class MainController {
     }
 
     private void processFileAction(String mode) {
-        // 1. Validation
         if (selectedFile == null || !fileProcessor.fileExists(selectedFile)) {
             showError("File Error", "Please select a valid input file.");
             return;
@@ -208,7 +184,6 @@ public class MainController {
             return;
         }
 
-        // 2. Select Save Location
         FileChooser saveChooser = new FileChooser();
         saveChooser.setTitle("Save " + mode + "ed File As");
 
@@ -225,23 +200,17 @@ public class MainController {
 
         File destinationFile = saveChooser.showSaveDialog(stage);
         if (destinationFile == null) {
-            // User cancelled save dialog
             setStatus("Operation cancelled by user.", "status-text");
             return;
         }
 
-        // 3. Process File
         try {
-            // Read bytes
             byte[] inputBytes = fileProcessor.readFile(selectedFile);
 
-            // Polymorphic call to process bytes with XOR engine
             byte[] processedBytes = encryptionEngine.processBytes(inputBytes, keyManager.getKey());
 
-            // Write bytes
             fileProcessor.writeFile(destinationFile, processedBytes);
 
-            // Success feedback
             setStatus("✓ " + mode + "ion completed successfully! Saved to: " + destinationFile.getName(), "status-success");
             showInfo("Success", "File " + mode.toLowerCase() + "ed successfully!\n\nSaved to:\n" + destinationFile.getAbsolutePath());
 

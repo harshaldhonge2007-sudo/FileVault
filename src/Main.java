@@ -2,12 +2,6 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/**
- * Main application entry point for the FileVault JavaFX application.
- * 
- * OOP Concept Demonstrated:
- * - Inheritance: Extends javafx.application.Application and overrides the start method.
- */
 public class Main extends Application {
 
     @Override
